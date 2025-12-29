@@ -46,4 +46,10 @@ public class ChatController {
                 body.get("message")
         );
     }
+    // lấy cuộc trò truyện
+    @GetMapping("/conversation/user/{userId}")
+    public List<CuocTroChuyenAI> getConversations(@PathVariable Integer userId) {
+        return conversationRepo
+                .findByUserIdOrderByCreatedAtDesc(userId);
+    }
 }
