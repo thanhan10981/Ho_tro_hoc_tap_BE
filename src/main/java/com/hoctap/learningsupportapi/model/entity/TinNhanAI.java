@@ -1,5 +1,6 @@
 package com.hoctap.learningsupportapi.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class TinNhanAI {
 
     @ManyToOne
     @JoinColumn(name = "ma_cuoc_tro_chuyen")
+    @JsonIgnore
     private CuocTroChuyenAI conversation;
 
     @Column(name = "nguoi_gui")
