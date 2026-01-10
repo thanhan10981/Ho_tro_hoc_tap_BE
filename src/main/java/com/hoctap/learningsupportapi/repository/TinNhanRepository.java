@@ -1,5 +1,4 @@
 package com.hoctap.learningsupportapi.repository;
-
 import com.hoctap.learningsupportapi.model.entity.TinNhanAI;
 import org.springframework.data.jpa.repository.JpaRepository;
 
