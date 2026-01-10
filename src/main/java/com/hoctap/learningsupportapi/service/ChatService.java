@@ -1,5 +1,6 @@
 package com.hoctap.learningsupportapi.service;
 
+
 import com.hoctap.learningsupportapi.model.entity.CuocTroChuyenAI;
 import com.hoctap.learningsupportapi.model.entity.TinNhanAI;
 import com.hoctap.learningsupportapi.repository.CuocTroChuyenRepository;
