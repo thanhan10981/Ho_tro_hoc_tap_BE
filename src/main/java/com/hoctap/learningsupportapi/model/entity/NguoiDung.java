@@ -6,10 +6,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "nguoi_dung")
 @Getter
 @Setter
+@Entity
+@Table(name = "nguoi_dung")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

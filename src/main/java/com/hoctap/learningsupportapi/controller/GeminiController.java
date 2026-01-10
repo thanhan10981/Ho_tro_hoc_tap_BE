@@ -1,13 +1,9 @@
 package com.hoctap.learningsupportapi.controller;
 
-import com.hoctap.learningsupportapi.model.entity.CuocTroChuyenAI;
-import com.hoctap.learningsupportapi.model.entity.TinNhanAI;
 import com.hoctap.learningsupportapi.service.GeminiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 @RestController
