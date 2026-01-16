@@ -40,4 +40,10 @@ public class NhacNho {
 
     @Column(name = "ngay_gui")
     private LocalDateTime ngayGui;
+
+    @Column(name = "email", length = 100)
+    private String email;
+
+    @Column(name = "loai_nhac_nho", nullable = false)
+    private Boolean loaiNhacNho;
 }
