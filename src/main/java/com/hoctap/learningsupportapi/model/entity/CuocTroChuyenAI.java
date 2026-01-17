@@ -22,8 +22,10 @@ public class CuocTroChuyenAI {
     @Column(name = "ma_nguoi_dung")
     private Integer userId;
 
-    @Column(name = "ma_mon_hoc")
-    private Integer monHocId;
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "ma_mon_hoc")
+    private MonHocCaNhan monHoc;
+
 
     @Column(name = "ngay_tao")
     private LocalDateTime createdAt;

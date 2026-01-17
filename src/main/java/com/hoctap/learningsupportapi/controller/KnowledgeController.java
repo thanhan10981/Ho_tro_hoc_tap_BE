@@ -1,7 +1,4 @@
     package com.hoctap.learningsupportapi.controller;
-
-
-
     import com.hoctap.learningsupportapi.model.dto.KnowledgeDocResponse;
     import com.hoctap.learningsupportapi.model.entity.GhiChuTaiLieu;
     import com.hoctap.learningsupportapi.model.entity.TaiLieuChung;
@@ -30,8 +27,8 @@
     import java.nio.file.StandardCopyOption;
     import java.time.LocalDateTime;
     import java.util.List;
+    import java.util.Map;
     import java.util.UUID;
-
     @RestController
     @RequestMapping("/api/knowledge")
     @RequiredArgsConstructor
@@ -202,4 +199,6 @@
             taiLieuNhanRepo.deleteByNguoiDung_IdAndTaiLieu_Id(userId, docId);
             return ResponseEntity.ok().build();
         }
+
+
     }
