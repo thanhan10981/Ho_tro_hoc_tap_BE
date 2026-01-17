@@ -18,6 +18,12 @@ public class CreateEventRequest {
     private String mucDoUuTien;
     private String diaDiem;
 
-    // ĐÃ ĐƯỢC FE TÍNH SẴN
-    private LocalDateTime thoiGianNhacNho;
+    // ===== REMINDER NÂNG CẤP =====
+    private Boolean nhacTruocBatDau;
+    private Integer soPhutTruocBatDau;
+
+    private Boolean nhacTruocKetThuc;
+    private Integer soPhutTruocKetThuc;
+    private String emailNhacNho;
+
 }
