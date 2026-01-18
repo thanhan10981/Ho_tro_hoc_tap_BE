@@ -1,5 +1,6 @@
 package  com.hoctap.learningsupportapi.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -50,6 +51,20 @@ public class TaiLieuChung {
     private ChuDe chuDe;
 
     @OneToMany(mappedBy = "taiLieu")
+    @JsonIgnore
     private List<DanhGiaTaiLieuChung> danhGias;
+
+    @ManyToOne
+    @JoinColumn(name = "ma_linh_vuc")
+    private LinhVuc linhVuc;
+
+    @ManyToOne
+    @JoinColumn(name = "ma_cap_bac")
+    private CapBac capBac;
+
+
+    @ManyToOne
+    @JoinColumn(name = "ma_nguoi_dung")
+    private NguoiDung nguoiDung;
 
 }

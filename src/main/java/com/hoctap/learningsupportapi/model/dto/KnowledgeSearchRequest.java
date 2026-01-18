@@ -7,7 +7,11 @@ public class KnowledgeSearchRequest {
 
     private String keyword;
     private String type;
-    private String subject;
+
+    private Integer linhVucId;
+    private Integer chuDeId;
+    private Integer capBacId;
+
     private Integer rating;
 
     private int page = 0;

@@ -9,11 +9,11 @@ public class KnowledgeDocResponse {
     private Integer id;
     private String title;
     private String description;
-
-    private String subject;   // CNTT, Toán...
-    private String type;      // PDF, VIDEO
-    private String nhan;      // tag
-
+    private String linhVuc;
+    private String subject;
+    private String type;
+    private String filePath;
+    private Double rating;
     private long size;
     private long views;
     private long downloads;

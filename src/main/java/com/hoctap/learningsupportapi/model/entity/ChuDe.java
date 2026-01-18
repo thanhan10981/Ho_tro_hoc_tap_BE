@@ -15,4 +15,8 @@ public class ChuDe {
 
     @Column(name = "ten_chu_de")
     private String tenChuDe;
+
+    @ManyToOne
+    @JoinColumn(name = "ma_linh_vuc")
+    private LinhVuc linhVuc;
 }

@@ -32,4 +32,13 @@ public class JwtUtil {
 
         return Integer.parseInt(claims.getSubject());
     }
+    public static String getEmailFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("email", String.class);
+    }
 }

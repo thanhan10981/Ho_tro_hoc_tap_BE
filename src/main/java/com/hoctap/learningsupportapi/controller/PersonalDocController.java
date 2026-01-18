@@ -1,11 +1,20 @@
 package com.hoctap.learningsupportapi.controller;
-import java.util.UUID;
 
+import java.util.UUID;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import com.hoctap.learningsupportapi.model.dto.PersonalDocResponse;
+import com.hoctap.learningsupportapi.model.dto.SaveNhanRequest;
 import com.hoctap.learningsupportapi.model.entity.*;
-import com.hoctap.learningsupportapi.repository.GhiChuTaiLieuRepository;
-import com.hoctap.learningsupportapi.repository.TaiLieuChungRepository;
-import com.hoctap.learningsupportapi.repository.TaiLieuNhanRepository;
+import com.hoctap.learningsupportapi.repository.*;
+import com.hoctap.learningsupportapi.service.KnowledgeService;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -13,26 +22,22 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/personal-docs")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class PersonalDocController {
 
     private final TaiLieuNhanRepository taiLieuNhanRepo;
     private final TaiLieuChungRepository taiLieuChungRepo;
     private final GhiChuTaiLieuRepository ghiChuRepo;
-
+    private final KnowledgeService knowledgeService;
+    private final NguoiDungRepository nguoiDungRepository;
 
     /* ================= PDF ================= */
 
     @GetMapping("/{docId}/pdf")
-    public ResponseEntity<Resource> streamPdf(@PathVariable Integer  docId)
+    public ResponseEntity<Resource> streamPdf(@PathVariable Integer docId)
             throws IOException {
 
         TaiLieuChung tl = taiLieuChungRepo.findById(docId).orElseThrow();
@@ -50,9 +55,14 @@ public class PersonalDocController {
 
     @GetMapping("/{docId}/canvas")
     public GhiChuTaiLieu loadCanvas(
-            @PathVariable Integer  docId,
-            @RequestParam Integer userId
+            @PathVariable Integer docId,
+            Authentication authentication
     ) {
+        String email = authentication.getName();
+        Integer userId = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"))
+                .getId();
+
         return ghiChuRepo
                 .findTopByTaiLieu_IdAndNguoiDung_IdOrderByCreatedAtDesc(
                         docId, userId
@@ -62,17 +72,16 @@ public class PersonalDocController {
     @PostMapping("/{docId}/canvas")
     public GhiChuTaiLieu saveCanvas(
             @PathVariable Integer docId,
-            @RequestParam Integer userId,
+            Authentication authentication,
             @RequestBody String canvasJson
     ) {
+        String email = authentication.getName();
+        NguoiDung user = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
         GhiChuTaiLieu note = new GhiChuTaiLieu();
-
         note.setTaiLieu(taiLieuChungRepo.getReferenceById(docId));
-
-        NguoiDung nd = new NguoiDung();
-        nd.setId(userId);
-        note.setNguoiDung(nd);
-
+        note.setNguoiDung(user);
         note.setCanvasJson(canvasJson);
         note.setCreatedAt(LocalDateTime.now());
 
@@ -83,37 +92,38 @@ public class PersonalDocController {
 
     @GetMapping("/{docId}/notes")
     public List<GhiChuTaiLieu> getNotes(
-            @PathVariable Integer  docId,
-            @RequestParam Integer userId
-
+            @PathVariable Integer docId,
+            Authentication authentication
     ) {
-        return ghiChuRepo
-                .findByTaiLieu_IdAndNguoiDung_Id(docId, userId);
+        String email = authentication.getName();
+        Integer userId = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"))
+                .getId();
+
+        return ghiChuRepo.findByTaiLieu_IdAndNguoiDung_Id(docId, userId);
     }
 
     @PostMapping("/{docId}/notes")
     public GhiChuTaiLieu addNote(
             @PathVariable Integer docId,
-            @RequestParam Integer userId,
+            Authentication authentication,
             @RequestBody String content
     ) {
+        String email = authentication.getName();
+        NguoiDung user = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
         GhiChuTaiLieu note = new GhiChuTaiLieu();
-
         note.setTaiLieu(taiLieuChungRepo.getReferenceById(docId));
-
-        NguoiDung nd = new NguoiDung();
-        nd.setId(userId);
-        note.setNguoiDung(nd);
-
+        note.setNguoiDung(user);
         note.setNoiDung(content);
         note.setCreatedAt(LocalDateTime.now());
 
         return ghiChuRepo.save(note);
     }
 
-
     @DeleteMapping("/notes/{id}")
-    public void deleteNote(@PathVariable UUID  id) {
+    public void deleteNote(@PathVariable UUID id) {
         ghiChuRepo.deleteById(id);
     }
 
@@ -137,5 +147,56 @@ public class PersonalDocController {
         taiLieuNhanRepo.save(tln);
     }
 
+    /* ================== KHO CÁ NHÂN ================== */
 
+    @GetMapping
+    public List<PersonalDocResponse> getPersonalDocs(Authentication authentication) {
+        String email = authentication.getName();
+        NguoiDung user = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        return knowledgeService.getPersonalDocs(user.getId());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> removeFromPersonal(
+            Authentication authentication,
+            @RequestParam Integer docId
+    ) {
+        String email = authentication.getName();
+        Integer userId = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"))
+                .getId();
+
+        knowledgeService.removeFromPersonal(userId, docId);
+        return ResponseEntity.ok().build();
+    }
+
+    /* ================= LABEL ================= */
+
+    @PostMapping("/label")
+    public ResponseEntity<?> addNhanToDoc(
+            Authentication authentication,
+            @RequestBody SaveNhanRequest req
+    ) {
+        String email = authentication.getName();
+        Integer userId = nguoiDungRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"))
+                .getId();
+
+        knowledgeService.addNhanToPersonalDoc(
+                userId,
+                req.getDocId(),
+                req.getNhanId()
+        );
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/by-label")
+    public List<PersonalDocResponse> getByNhan(
+            Authentication authentication,
+            @RequestParam Integer nhanId
+    ) {
+        return knowledgeService.getDocsByNhan(nhanId);
+    }
 }

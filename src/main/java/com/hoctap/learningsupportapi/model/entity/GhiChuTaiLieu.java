@@ -35,9 +35,9 @@ public class GhiChuTaiLieu {
     @Column(name = "canvas_json", columnDefinition = "NVARCHAR(MAX)")
     private String canvasJson;
 
-    public void setTaiLieu(TaiLieuChung referenceById) {
-    }
-
-    public void setNguoiDung(NguoiDung nd) {
-    }
+//    public void setTaiLieu(TaiLieuChung referenceById) {
+//    }
+//
+//    public void setNguoiDung(NguoiDung nd) {
+//    }
 }
